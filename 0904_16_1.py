@@ -1025,7 +1025,7 @@ if page == "🏠 Dashboard":
             <div class="marquee-box">
 
                 <div class="marquee">
-                    ⚠️ 🎮  你在玩遊戲，還是遊戲在玩你？😵 讓 AI 告訴你：你的遊戲習慣是哪一級？ ⚠️
+                    ⚠️ 🚗 你在玩遊戲，還是遊戲在玩你？😵 讓 AI 告訴你：你的遊戲習慣是哪一級？ ⚠️
                 </div>
 
             </div>
