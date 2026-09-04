@@ -910,24 +910,31 @@ with st.sidebar:
 
     st.divider()
 
+    # ========================================================
+    # 功能選單
+    # 使用有趣版名稱顯示
+    # 程式內部仍維持原本正式名稱
+    # ========================================================
 
-    page = st.radio(
+    page_display = {
+        "🎮 遊戲大廳": "🏠 Dashboard",
+        "📖 玩家手冊": "ℹ️ 專題說明",
+        "🔍 數據偵查局": "📊 資料與關係分析",
+        "🕵️ 資料鑑識科": "✅ 資料驗證",
+        "💥 AI 極限挑戰": "🧪 壓力測試",
+        "🎯 你的成癮測驗": "👤 使用者分析"
+    }
+
+    selected_display = st.radio(
         "功能選單",
-
-        [
-            "🏠 Dashboard",
-            "ℹ️ 專題說明",
-            "📊 資料與關係分析",
-            "✅ 資料驗證",
-            "🧪 壓力測試",
-            "👤 使用者分析"
-        ]
+        page_display
     )
 
+    # 將顯示名稱轉回原本程式使用的名稱
+    page = page_display[selected_display]
 
     st.divider()
-
-
+    
 # ============================================================
 # 11. Dashboard
 # ============================================================
@@ -959,6 +966,76 @@ if page == "🏠 Dashboard":
         unsafe_allow_html=True
     )
 
+    # ============================================================
+    # 🎮 Dashboard 跑馬燈
+    # ============================================================
+
+    components.html(
+        """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+
+                body {
+                    margin: 0;
+                    padding: 0;
+                    overflow: hidden;
+                    background: transparent;
+                }
+
+                .marquee-box {
+                    width: 100%;
+                    height: 65px;
+                    overflow: hidden;
+                    background: #111111;
+                    border: 3px solid #FFD166;
+                    border-radius: 14px;
+                    box-sizing: border-box;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .marquee {
+                    display: inline-block;
+                    white-space: nowrap;
+                    animation: moveText 8s linear infinite;
+                    font-size: 30px;
+                    font-weight: 900;
+                    color: #FFD166;
+                }
+
+                @keyframes moveText {
+
+                    0% {
+                        transform: translateX(100%);
+                    }
+
+                    100% {
+                        transform: translateX(-100%);
+                    }
+
+                }
+
+            </style>
+        </head>
+
+        <body>
+
+            <div class="marquee-box">
+
+                <div class="marquee">
+                    ⚠️ 🎮  你在玩遊戲，還是遊戲在玩你？😵 讓 AI 告訴你：你的遊戲習慣是哪一級？ ⚠️
+                </div>
+
+            </div>
+
+        </body>
+        </html>
+        """,
+        height=75,
+        scrolling=False
+    )
 
     # ========================================================
     # GAME FLOW
@@ -1317,30 +1394,59 @@ if page == "🏠 Dashboard":
             )
 
 
-    st.divider()
-
-
     # ========================================================
     # CTA
     # ========================================================
 
+    st.divider()
+
     st.markdown(
         """
-        <div class="hero-box" style="text-align:center; margin-top:15px; margin-bottom:10px;">
-            <div style="font-size:28px; font-weight:1000; color:#264653;">
-                🎮 READY TO PLAY?
-            </div>
-            <div style="font-size:18px; font-weight:800; color:#5D4037; margin-top:10px;">
-                前往「👤 使用者分析」輸入你的遊戲與生活型態資料
-            </div>
-            <div style="font-size:24px; font-weight:1000; color:#2A9D8F; margin-top:12px;">
-                ▶ START YOUR AI CHALLENGE
-            </div>
-        </div>
+        <style>
+
+        /* CTA 按鈕 */
+        div.stButton > button {
+            width: 100% !important;
+            min-height: 150px !important;
+
+            background: #FFD166 !important;
+            color: #264653 !important;
+
+            border: 4px solid #264653 !important;
+            border-radius: 18px !important;
+
+            box-shadow: 0 7px 0 #264653 !important;
+
+            transition: all 0.15s ease !important;
+        }
+
+        /* 滑鼠移上去 */
+        div.stButton > button:hover {
+            background: #FFE08A !important;
+            transform: translateY(-4px) !important;
+            box-shadow: 0 11px 0 #264653 !important;
+        }
+
+        /* 點擊時 */
+        div.stButton > button:active {
+            transform: translateY(5px) !important;
+            box-shadow: 0 2px 0 #264653 !important;
+        }
+
+        </style>
         """,
         unsafe_allow_html=True
     )
 
+
+    if st.button(
+        "🎮 READY TO PLAY?\n\n"
+        "前往「👤 使用者分析」輸入你的遊戲與生活型態資料\n\n"
+        "▶ START YOUR AI CHALLENGE",
+        use_container_width=True
+    ):
+        st.session_state.page_selection = "👤 使用者分析"
+        st.rerun()
 
 # ============================================================
 # 12. 專題說明
@@ -1545,13 +1651,59 @@ elif page == "ℹ️ 專題說明":
                 🧹 資料清理
             </div>
             <div style="font-size:14px; font-weight:700;">
-                缺失值、異常資料與欄位整理
+                ① 缺失值、異常資料與欄位整理<br>
+                ② 遊戲年資異常 遊戲年資 > 年齡<br>
+                ③ 不合理時間資料<br>
             </div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
+    st.markdown(
+        """
+        <div style="
+            background:#F1FAEE;
+            border:3px solid #52B788;
+            border-radius:14px;
+            padding:15px;
+            text-align:center;
+            margin:15px 0;
+        ">
+            <div style="font-size:20px;font-weight:1000;">
+                📊 清洗結果
+            </div>
+            <div style="font-size:16px;font-weight:700;margin-top:8px;">
+                原始資料：1,000 萬筆
+            </div>
+            <div style="font-size:16px;font-weight:700;">
+                最終保留：271,807 筆
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div style="text-align:center; margin:8px 0 15px 0;">
+            <a href="https://github.com/fuwafuwa152123/gaming/blob/main/data_cleaning.py"
+            target="_blank"
+            style="
+                color:#264653;
+                font-weight:900;
+                text-decoration:none;
+                background:#FFFFFF;
+                padding:7px 16px;
+                border-radius:10px;
+                border:2px solid #264653;
+            ">
+                💻 查看 data_cleaning.py
+            </a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     # ============================================================
     # 03 資料切割
     # ============================================================
@@ -1605,9 +1757,61 @@ elif page == "ℹ️ 專題說明":
         unsafe_allow_html=True
     )
 
+    # ============================================================
+    # 04 關聯性分析
+    # ============================================================
+
+    st.markdown(
+        """
+        <div style="
+            background:#D8F3DC;
+            border:4px solid #52B788;
+            border-radius:16px;
+            padding:18px;
+            text-align:center;
+            color:#263238;
+            margin:10px 0;
+        ">
+            <div style="font-size:28px; font-weight:1000;">04</div>
+            <div style="font-size:21px; font-weight:1000;">
+                📊 關聯性分析
+            </div>
+            <div style="font-size:14px; font-weight:700;">
+                分析各項生活型態與遊戲行為和成癮程度的關係
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div style="text-align:center; margin:8px 0 15px 0;">
+            <a href="https://github.com/fuwafuwa152123/gaming/blob/main/relation.py"
+            target="_blank"
+            style="
+                color:#264653;
+                font-weight:900;
+                text-decoration:none;
+                background:#FFFFFF;
+                padding:7px 16px;
+                border-radius:10px;
+                border:2px solid #264653;
+            ">
+                💻 查看 relation.py
+            </a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div style="text-align:center;font-size:30px;font-weight:1000;">↓</div>',
+        unsafe_allow_html=True
+    )
 
     # ============================================================
-    # 04 特徵檢查
+    # 05 特徵檢查
     # ============================================================
 
     st.markdown(
@@ -1621,7 +1825,7 @@ elif page == "ℹ️ 專題說明":
             color: #263238;
             margin: 10px 0;
         ">
-            <div style="font-size: 28px; font-weight: 900;">04</div>
+            <div style="font-size: 28px; font-weight: 900;">05</div>
             <div style="font-size: 21px; font-weight: 900;">
                 🔍 特徵檢查
             </div>
@@ -1678,26 +1882,25 @@ elif page == "ℹ️ 專題說明":
 
 
     # ============================================================
-    # 05 關聯性分析
+    # 06 最佳參數RunLoopForParam.py
     # ============================================================
-
     st.markdown(
         """
         <div style="
-            background:#D8F3DC;
-            border:4px solid #52B788;
+            background:#FFD166;
+            border:4px solid #F4A261;
             border-radius:16px;
             padding:18px;
             text-align:center;
             color:#263238;
             margin:10px 0;
         ">
-            <div style="font-size:28px; font-weight:1000;">05</div>
+            <div style="font-size:28px; font-weight:1000;">06</div>
             <div style="font-size:21px; font-weight:1000;">
-                📊 關聯性分析
+                🤖 XGBoost AI 模型最佳參數
             </div>
             <div style="font-size:14px; font-weight:700;">
-                分析各項生活型態與遊戲行為和成癮程度的關係
+                使用最佳參數建立遊戲成癮程度預測模型
             </div>
         </div>
         """,
@@ -1707,7 +1910,7 @@ elif page == "ℹ️ 專題說明":
     st.markdown(
         """
         <div style="text-align:center; margin:8px 0 15px 0;">
-            <a href="https://github.com/fuwafuwa152123/gaming/blob/main/relation.py"
+            <a href="https://github.com/fuwafuwa152123/gaming/blob/main/RunLoopForParam.py"
             target="_blank"
             style="
                 color:#264653;
@@ -1718,7 +1921,7 @@ elif page == "ℹ️ 專題說明":
                 border-radius:10px;
                 border:2px solid #264653;
             ">
-                💻 查看 relation.py
+                💻 查看 RunLoopForParam.py
             </a>
         </div>
         """,
@@ -1730,9 +1933,8 @@ elif page == "ℹ️ 專題說明":
         unsafe_allow_html=True
     )
 
-
     # ============================================================
-    # 06 壓力測試
+    # 07 壓力測試
     # ============================================================
 
     st.markdown(
@@ -1746,7 +1948,7 @@ elif page == "ℹ️ 專題說明":
             color:#263238;
             margin:10px 0;
         ">
-            <div style="font-size:28px; font-weight:1000;">06</div>
+            <div style="font-size:28px; font-weight:1000;">07</div>
             <div style="font-size:21px; font-weight:1000;">
                 🧪 壓力測試
             </div>
@@ -1786,7 +1988,7 @@ elif page == "ℹ️ 專題說明":
 
 
     # ============================================================
-    # 07 XGBoost AI 模型
+    # 08 XGBoost AI 模型
     # ============================================================
 
     st.markdown(
@@ -1800,7 +2002,7 @@ elif page == "ℹ️ 專題說明":
             color:#263238;
             margin:10px 0;
         ">
-            <div style="font-size:28px; font-weight:1000;">07</div>
+            <div style="font-size:28px; font-weight:1000;">08</div>
             <div style="font-size:21px; font-weight:1000;">
                 🤖 XGBoost AI 模型
             </div>
@@ -1839,7 +2041,7 @@ elif page == "ℹ️ 專題說明":
     )
 
     # ============================================================
-    # 08 使用者輸入
+    # 09 使用者輸入
     # ============================================================
 
     st.markdown(
@@ -1854,7 +2056,7 @@ elif page == "ℹ️ 專題說明":
             margin: 10px 0;
         ">
             <div style="font-size: 28px; font-weight: 950;">
-                08
+                09
             </div>
             <div style="font-size: 21px; font-weight: 900;">
                 👤 使用者輸入
@@ -1877,7 +2079,7 @@ elif page == "ℹ️ 專題說明":
 
 
     # ============================================================
-    # 09 預測遊戲成癮程度
+    # 10 預測遊戲成癮程度
     # ============================================================
 
     st.markdown(
@@ -1892,7 +2094,7 @@ elif page == "ℹ️ 專題說明":
             margin: 10px 0;
         ">
             <div style="font-size: 28px; font-weight: 900;">
-                09
+                10
             </div>
             <div style="font-size: 21px; font-weight: 900;">
                 🎯 預測遊戲成癮程度
@@ -2044,6 +2246,119 @@ elif page == "📊 資料與關係分析":
 
     st.divider()
 
+   # ========================================================
+    # 37 個欄位
+    # ========================================================
+
+    st.subheader(
+        "📊 全部欄位與遊戲成癮程度的關聯性"
+    )
+
+
+    all_relation_data = [
+        ["平均每日遊戲時間", "daily_gaming_hours", 0.866051],
+        ["平均每日總螢幕時間", "screen_time_total", 0.578582],
+        ["平均每日運動時間", "exercise_hours", 0.064452],
+        ["平均每日睡眠時間", "sleep_hours", 0.038925],
+        ["年齡", "age", 0.004475],
+        ["社交活動指數", "social_interaction_score", 0.003425],
+        ["生活壓力評分", "stress_level", 0.003324],
+        ["夜間遊戲比例", "night_gaming_ratio", 0.003054],
+        ["線上網友人數", "online_friends", 0.002733],
+        ["網路連線品質", "internet_quality", 0.002725],
+        ["工作場所生產力評分", "work_productivity", 0.002612],
+        ["接觸有毒社區", "toxic_exposure", 0.002446],
+        ["眼睛疲勞程度", "eye_strain_score", 0.001650],
+        ["對參與電競的興趣", "esports_interest", 0.001480],
+        ["關係品質評分", "relationship_satisfaction", 0.001454],
+        ["背痛嚴重程度", "back_pain_score", 0.001399],
+        ["焦慮評估得分", "anxiety_score", 0.001299],
+        ["孤獨指數", "loneliness_score", 0.001046],
+        ["暴力遊戲的比例", "violent_games_ratio", 0.000997],
+        ["家長監控評分", "parental_supervision", 0.000926],
+        ["每週遊戲直播時長", "streaming_hours", 0.000883],
+        ["週末遊戲時長", "weekend_gaming_hours", 0.000879],
+        ["憂鬱評分", "depression_score", 0.000818],
+        ["行動遊戲份額", "mobile_gaming_ratio", 0.000812],
+        ["是否使用耳機", "headset_usage", 0.000703],
+        ["月收入估算", "income", 0.000626],
+        ["遊戲好友數量", "friends_gaming_count", 0.000621],
+        ["每日咖啡因攝取量", "caffeine_intake", 0.000587],
+        ["每週遊戲次數", "weekly_sessions", 0.000551],
+        ["身體質量指數", "bmi", 0.000342],
+        ["競技技能排名", "competitive_rank", 0.000335],
+        ["攻擊傾向分數", "aggression_score", 0.000275],
+        ["學業成績", "academic_performance", 0.000187],
+        ["每月遊戲內消費", "microtransactions_spending", 0.000152],
+        ["整體幸福感", "happiness_score", 0.000130],
+        ["多人遊戲比例", "multiplayer_ratio", 0.000087],
+        ["總遊戲經驗年資", "years_gaming", 0.000053]
+    ]
+
+
+    all_relation_df = pd.DataFrame(
+        all_relation_data,
+
+        columns=[
+            "欄位名稱",
+            "英文",
+            "關聯"
+        ]
+    )
+
+
+    all_relation_df.index = range(
+        1,
+        len(all_relation_df) + 1
+    )
+
+    all_relation_df.index.name = "排名"
+
+
+    def highlight_top4(row):
+
+        if row.name <= 4:
+
+            return [
+                "background-color: #FFD166; "
+                "color: #263238; "
+                "font-weight: 900; "
+                "border: 2px solid #F4A261;"
+            ] * len(row)
+
+        return [""] * len(row)
+
+
+    styled_relation_df = (
+        all_relation_df
+        .style
+        .apply(
+            highlight_top4,
+            axis=1
+        )
+        .format({
+            "關聯": "{:.6f}"
+        })
+    )
+
+
+    st.dataframe(
+        styled_relation_df,
+
+        use_container_width=True,
+
+        height=850
+    )
+
+
+    st.info(
+        "📌 關聯數值越接近 1，代表正向關聯越強；"
+        "本表完整呈現 37 個欄位與遊戲成癮程度的關聯程度。"
+        "其中前 4 名為本研究目前選定的核心分析特徵。"
+    )
+
+
+    st.divider()
 
     # ========================================================
     # 散佈圖
@@ -2269,119 +2584,7 @@ elif page == "📊 資料與關係分析":
     st.divider()
 
 
-    # ========================================================
-    # 37 個欄位
-    # ========================================================
-
-    st.subheader(
-        "📊 全部欄位與遊戲成癮程度的關聯性"
-    )
-
-
-    all_relation_data = [
-        ["平均每日遊戲時間", "daily_gaming_hours", 0.866051],
-        ["平均每日總螢幕時間", "screen_time_total", 0.578582],
-        ["平均每日運動時間", "exercise_hours", 0.064452],
-        ["平均每日睡眠時間", "sleep_hours", 0.038925],
-        ["年齡", "age", 0.004475],
-        ["社交活動指數", "social_interaction_score", 0.003425],
-        ["生活壓力評分", "stress_level", 0.003324],
-        ["夜間遊戲比例", "night_gaming_ratio", 0.003054],
-        ["線上網友人數", "online_friends", 0.002733],
-        ["網路連線品質", "internet_quality", 0.002725],
-        ["工作場所生產力評分", "work_productivity", 0.002612],
-        ["接觸有毒社區", "toxic_exposure", 0.002446],
-        ["眼睛疲勞程度", "eye_strain_score", 0.001650],
-        ["對參與電競的興趣", "esports_interest", 0.001480],
-        ["關係品質評分", "relationship_satisfaction", 0.001454],
-        ["背痛嚴重程度", "back_pain_score", 0.001399],
-        ["焦慮評估得分", "anxiety_score", 0.001299],
-        ["孤獨指數", "loneliness_score", 0.001046],
-        ["暴力遊戲的比例", "violent_games_ratio", 0.000997],
-        ["家長監控評分", "parental_supervision", 0.000926],
-        ["每週遊戲直播時長", "streaming_hours", 0.000883],
-        ["週末遊戲時長", "weekend_gaming_hours", 0.000879],
-        ["憂鬱評分", "depression_score", 0.000818],
-        ["行動遊戲份額", "mobile_gaming_ratio", 0.000812],
-        ["是否使用耳機", "headset_usage", 0.000703],
-        ["月收入估算", "income", 0.000626],
-        ["遊戲好友數量", "friends_gaming_count", 0.000621],
-        ["每日咖啡因攝取量", "caffeine_intake", 0.000587],
-        ["每週遊戲次數", "weekly_sessions", 0.000551],
-        ["身體質量指數", "bmi", 0.000342],
-        ["競技技能排名", "competitive_rank", 0.000335],
-        ["攻擊傾向分數", "aggression_score", 0.000275],
-        ["學業成績", "academic_performance", 0.000187],
-        ["每月遊戲內消費", "microtransactions_spending", 0.000152],
-        ["整體幸福感", "happiness_score", 0.000130],
-        ["多人遊戲比例", "multiplayer_ratio", 0.000087],
-        ["總遊戲經驗年資", "years_gaming", 0.000053]
-    ]
-
-
-    all_relation_df = pd.DataFrame(
-        all_relation_data,
-
-        columns=[
-            "欄位名稱",
-            "英文",
-            "關聯"
-        ]
-    )
-
-
-    all_relation_df.index = range(
-        1,
-        len(all_relation_df) + 1
-    )
-
-    all_relation_df.index.name = "排名"
-
-
-    def highlight_top4(row):
-
-        if row.name <= 4:
-
-            return [
-                "background-color: #FFD166; "
-                "color: #263238; "
-                "font-weight: 900; "
-                "border: 2px solid #F4A261;"
-            ] * len(row)
-
-        return [""] * len(row)
-
-
-    styled_relation_df = (
-        all_relation_df
-        .style
-        .apply(
-            highlight_top4,
-            axis=1
-        )
-        .format({
-            "關聯": "{:.6f}"
-        })
-    )
-
-
-    st.dataframe(
-        styled_relation_df,
-
-        use_container_width=True,
-
-        height=850
-    )
-
-
-    st.info(
-        "📌 關聯數值越接近 1，代表正向關聯越強；"
-        "本表完整呈現 37 個欄位與遊戲成癮程度的關聯程度。"
-        "其中前 4 名為本研究目前選定的核心分析特徵。"
-    )
-
-
-    st.divider()
+ 
 
 
     # ========================================================
@@ -2940,6 +3143,7 @@ elif page == "🧪 壓力測試":
     )
 
 
+
 # ============================================================
 # 16. 使用者分析
 # ============================================================
@@ -2958,8 +3162,8 @@ elif page == "👤 使用者分析":
 
 
     st.info(
-        "📌 輸入限制：平均每日遊戲時間不得大於平均每日總螢幕時間；"
-        "遊戲時間＋運動時間＋睡眠時間不得超過 24 小時。"
+        "📌 輸入限制：4 項每日時間皆為 0～20 小時；"
+        "平均每日遊戲時間不得大於平均每日總螢幕時間。"
     )
 
 
@@ -2985,7 +3189,7 @@ elif page == "👤 使用者分析":
 
                 min_value=0.0,
 
-                max_value=24.0,
+                max_value=20.0,
 
                 value=3.0,
 
@@ -3002,7 +3206,7 @@ elif page == "👤 使用者分析":
 
                 min_value=0.0,
 
-                max_value=24.0,
+                max_value=20.0,
 
                 value=1.0,
 
@@ -3021,7 +3225,7 @@ elif page == "👤 使用者分析":
 
                 min_value=0.0,
 
-                max_value=24.0,
+                max_value=20.0,
 
                 value=6.0,
 
@@ -3038,7 +3242,7 @@ elif page == "👤 使用者分析":
 
                 min_value=0.0,
 
-                max_value=24.0,
+                max_value=20.0,
 
                 value=7.0,
 
@@ -3085,23 +3289,6 @@ elif page == "👤 使用者分析":
             st.stop()
 
 
-        total_hours = (
-            gaming_hours
-            + exercise_hours
-            + sleep_hours
-        )
-
-
-        if total_hours > 24:
-
-            st.error(
-                f"❌ 輸入不合理："
-                f"遊戲＋運動＋睡眠時間目前為 "
-                f"{total_hours:.1f} 小時，"
-                f"不能超過 24 小時。"
-            )
-
-            st.stop()
 
 
         # ====================================================
