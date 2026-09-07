@@ -915,6 +915,13 @@ with night_col:
         key="night_mode_toggle",
         help="切換白天／夜間遊戲模式"
     ):
+        # 先保存目前所在頁面，再重新執行程式。
+        # 夜間模式本身只應改變 CSS，不應改變功能選單。
+        current_page_selection = st.session_state.get(
+            "page_navigation",
+            "🎮 遊戲大廳"
+        )
+        st.session_state.page_navigation = current_page_selection
         st.session_state.night_mode = not st.session_state.night_mode
         st.rerun()
 
@@ -1344,9 +1351,11 @@ with st.sidebar:
         "🌐 資源情報站": "📚 參考文獻"
     }
 
+    # ⭐ 固定功能選單的 widget state，避免夜間模式 rerun 時回到第一頁
     selected_display = st.radio(
         "功能選單",
-        page_display
+        page_display,
+        key="page_navigation"
     )
 
     # 將顯示名稱轉回原本程式使用的名稱
