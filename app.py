@@ -3832,6 +3832,25 @@ elif page == "👤 使用者分析":
                 color_map[level]
             )
 
+            # Gauge：白天黑色、夜間白色
+            gauge_text_color = (
+                "#FFFFFF"
+                if st.session_state.night_mode
+                else "#263238"
+            )
+
+            gauge_pointer_color = (
+                "#FFFFFF"
+                if st.session_state.night_mode
+                else "#263238"
+            )
+
+            gauge_bg_color = (
+                "#171B32"
+                if st.session_state.night_mode
+                else "#FFFFFF"
+            )
+
 
             gauge_html = f"""
             <!DOCTYPE html>
@@ -3942,7 +3961,12 @@ elif page == "👤 使用者分析":
 
                     axis.renderer.labels.template.fontSize = 14;
                     axis.renderer.labels.template.fill =
-                        am4core.color("#F4F7FF");
+                        am4core.color("{gauge_text_color}");
+
+                    axis.renderer.ticks.template.stroke =
+                        am4core.color("{gauge_text_color}");
+
+                    axis.renderer.ticks.template.strokeWidth = 2;
 
 
                     var range1 =
@@ -4022,11 +4046,13 @@ elif page == "👤 使用者分析":
                         am4core.percent(20);
 
                     hand.startWidth = 8;
-                    hand.stroke = am4core.color("#FFFFFF");
-                    hand.fill = am4core.color("#FFFFFF");
+                    hand.stroke = am4core.color("{gauge_pointer_color}");
+                    hand.fill = am4core.color("{gauge_pointer_color}");
+                    hand.strokeWidth = 3;
                     hand.pin.disabled = false;
-                    hand.pin.fill = am4core.color("#FFFFFF");
-                    hand.pin.stroke = am4core.color("#FFFFFF");
+                    hand.pin.fill = am4core.color("{gauge_pointer_color}");
+                    hand.pin.stroke = am4core.color("{gauge_pointer_color}");
+                    hand.pin.strokeWidth = 3;
 
                     hand.value =
                         {addiction_score};
