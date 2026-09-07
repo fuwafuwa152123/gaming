@@ -134,16 +134,17 @@ st.markdown(
         box-shadow: 7px 7px 0 #E9C46A;
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
+
     }
     .cartoon-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 9px 0 rgba(0, 0, 0, 0.25);
-}
+    }
 
     .cartoon-card:active {
     transform: translateY(2px);
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
-}
+    }
 
     .section-card {
         background: #BDE0FE;
@@ -408,19 +409,7 @@ st.markdown(
         text-align: center;
         box-shadow: 5px 5px 0 #FFD166;
         min-height: 115px;
-        cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-
-    .player-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 9px 0 rgba(0,0,0,0.25);
-}
-
-    .player-card:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 rgba(0,0,0,0.25);
-}
 
     .player-icon {
         font-size: 30px;
@@ -1342,6 +1331,10 @@ if st.session_state.night_mode:
         unsafe_allow_html=True
     )
 
+def go_to_player_manual():
+    st.session_state.page_navigation = "📖 玩家手冊"
+
+
 # ============================================================
 # 10. Sidebar
 # ============================================================
@@ -1366,7 +1359,7 @@ with st.sidebar:
         "🕵️ 第一關 : 大BOSS": "✅ 資料驗證",
         "💥 第二關 : BOSS": "🧪 壓力測試",
         "🎯 第三關 : BOSS": "👤 使用者分析",
-        "🌐 破關花絮": "📚 參考文獻"
+        "🌐 資源情報站": "📚 參考文獻"
     }
 
     # ========================================================
@@ -1505,7 +1498,7 @@ with st.sidebar:
     # 功能選單
     # ========================================================
     selected_display = st.radio(
-        "",
+        "功能選單",
         page_display,
         key="page_navigation"
     )
@@ -1521,6 +1514,7 @@ with st.sidebar:
         _scroll_page_changed = (st.session_state._scroll_last_page != page)
         st.session_state._scroll_last_page = page
 
+    st.divider()
     
 # ============================================================
 # 11. Dashboard
@@ -2028,12 +2022,13 @@ if page == "🏠 Dashboard":
 
     if st.button(
         "🎮 READY TO PLAY?\n\n"
-        "前往「📖 玩家手冊」\n\n"
+        "前往「📖 玩家手冊」查看遊戲說明\n\n"
         "▶ START YOUR AI CHALLENGE",
-        use_container_width=True
+        use_container_width=True,
+        key="ready_to_play",
+        on_click=go_to_player_manual
     ):
-        st.session_state.page_selection = "👤 使用者分析"
-        st.rerun()
+        pass
 
 # ============================================================
 # 12. 專題說明
