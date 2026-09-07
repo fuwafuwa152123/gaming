@@ -1305,7 +1305,7 @@ if st.session_state.night_mode:
 
         /* Header */
         [data-testid="stHeader"] {
-            background: rgba(16,20,38,.85) !important;
+            background: rgba(16,20,38,.45) !important;
         }
         </style>
         """,
@@ -3586,7 +3586,7 @@ elif page == "👤 使用者分析":
 
                 max_value=20.0,
 
-                value=1.0,
+                value=0.0,
 
                 step=0.5,
 
@@ -3622,7 +3622,7 @@ elif page == "👤 使用者分析":
 
                 max_value=20.0,
 
-                value=7.0,
+                value=4.0,
 
                 step=0.5,
 
