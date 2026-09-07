@@ -1305,7 +1305,7 @@ if st.session_state.night_mode:
 
         /* Header */
         [data-testid="stHeader"] {
-            background: rgba(16,20,38,.45) !important;
+            background: rgba(16,20,38,.85) !important;
         }
         </style>
         """,
