@@ -1337,10 +1337,10 @@ with st.sidebar:
     page_display = {
         "🎮 遊戲大廳": "🏠 Dashboard",
         "📖 玩家手冊": "ℹ️ 專題說明",
-        "🔍 數據偵查局": "📊 資料與關係分析",
-        "🕵️ 資料鑑識科": "✅ 資料驗證",
-        "💥 AI 極限挑戰": "🧪 壓力測試",
-        "🎯 你的成癮測驗": "👤 使用者分析",
+        "🔍 第一關 : 小BOSS": "📊 資料與關係分析",
+        "🕵️ 第一關 : 大BOSS": "✅ 資料驗證",
+        "💥 第二關 : BOSS": "🧪 壓力測試",
+        "🎯 第三關 : BOSS": "👤 使用者分析",
         "🌐 資源情報站": "📚 參考文獻"
     }
 
@@ -1351,6 +1351,14 @@ with st.sidebar:
 
     # 將顯示名稱轉回原本程式使用的名稱
     page = page_display[selected_display]
+
+    # 只記錄「功能選單」是否真的切換頁面，供最下方回頂使用
+    if "_scroll_last_page" not in st.session_state:
+        st.session_state._scroll_last_page = page
+        _scroll_page_changed = False
+    else:
+        _scroll_page_changed = (st.session_state._scroll_last_page != page)
+        st.session_state._scroll_last_page = page
 
     st.divider()
     
@@ -1860,7 +1868,7 @@ if page == "🏠 Dashboard":
 
     if st.button(
         "🎮 READY TO PLAY?\n\n"
-        "前往「🎯 你的成癮測驗」輸入你的遊戲與生活型態資料\n\n"
+        "前往「🎯 第三關 : BOSS」輸入你的遊戲與生活型態資料\n\n"
         "▶ START YOUR AI CHALLENGE",
         use_container_width=True
     ):
@@ -4304,3 +4312,39 @@ elif page == "📚 參考文獻":
             unsafe_allow_html=True
         )
 
+
+
+# ============================================================
+# 🔝 切換功能選單後，等整個新頁面渲染完成再把主內容區拉回最上方
+# ============================================================
+if _scroll_page_changed:
+    components.html(
+        """
+        <script>
+        (function () {
+            const parentDoc = window.parent.document;
+
+            function scrollMainToTop() {
+                const main = parentDoc.querySelector('section[data-testid="stMain"]');
+                if (main) {
+                    main.scrollTop = 0;
+                    main.scrollTo(0, 0);
+                }
+            }
+
+            // 此元件位於整支程式最後方；再連續覆寫一小段時間，
+            // 避免 Streamlit rerender / scroll restoration 把位置設回去。
+            scrollMainToTop();
+            requestAnimationFrame(scrollMainToTop);
+            setTimeout(scrollMainToTop, 50);
+            setTimeout(scrollMainToTop, 100);
+            setTimeout(scrollMainToTop, 200);
+            setTimeout(scrollMainToTop, 350);
+            setTimeout(scrollMainToTop, 600);
+            setTimeout(scrollMainToTop, 900);
+        })();
+        </script>
+        """,
+        height=0,
+        scrolling=False
+    )
