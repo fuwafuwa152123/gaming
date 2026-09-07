@@ -3849,8 +3849,9 @@ elif page == "👤 使用者分析":
             f"🎮 PLAYER VALUE：{gaming_hours:.1f} 小時"
         )
 
+
     # ========================================================
-    # 😴 SLEEP
+    # 🖥️ SCREEN TIME
     # ========================================================
 
     with c2:
@@ -3858,27 +3859,28 @@ elif page == "👤 使用者分析":
         st.markdown(
             """
             <div class="game-section-title">
-                😴 SLEEP｜睡眠時數
+                🖥️ SCREEN TIME｜螢幕時數
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        sleep_hours = st.slider(
-            "你平均每天睡多久？",
+        screen_time = st.slider(
+            "你每天總共使用螢幕多久？",
             min_value=0.0,
             max_value=20.0,
-            value=st.session_state.sleep_hours_input,
+            value=st.session_state.screen_time_input,
             step=0.5,
-            key="sleep_hours_input",
+            key="screen_time_input",
             help=field_help[
-                "sleep_hours"
+                "screen_time_total"
             ]
         )
 
         st.caption(
-            f"😴 PLAYER VALUE：{sleep_hours:.1f} 小時"
+            f"🖥️ PLAYER VALUE：{screen_time:.1f} 小時"
         )
+
 
     # ========================================================
     # 🌱 EXERCISE
@@ -3913,8 +3915,9 @@ elif page == "👤 使用者分析":
             f"🌱 PLAYER VALUE：{exercise_hours:.1f} 小時"
         )
 
+
     # ========================================================
-    # 🖥️ SCREEN TIME
+    # 😴 SLEEP
     # ========================================================
 
     with c4:
@@ -3922,30 +3925,27 @@ elif page == "👤 使用者分析":
         st.markdown(
             """
             <div class="game-section-title">
-                🖥️ SCREEN TIME｜螢幕時數
+                😴 SLEEP｜睡眠時數
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        screen_time = st.slider(
-            "你每天總共使用螢幕多久？",
+        sleep_hours = st.slider(
+            "你平均每天睡多久？",
             min_value=0.0,
             max_value=20.0,
-            value=st.session_state.screen_time_input,
+            value=st.session_state.sleep_hours_input,
             step=0.5,
-            key="screen_time_input",
+            key="sleep_hours_input",
             help=field_help[
-                "screen_time_total"
+                "sleep_hours"
             ]
         )
 
         st.caption(
-            f"🖥️ PLAYER VALUE：{screen_time:.1f} 小時"
+            f"😴 PLAYER VALUE：{sleep_hours:.1f} 小時"
         )
-
-    st.divider()
-
 
     # ========================================================
     # 🚀 START AI ANALYSIS
