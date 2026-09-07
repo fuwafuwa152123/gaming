@@ -134,8 +134,8 @@ st.markdown(
         box-shadow: 7px 7px 0 #E9C46A;
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
-
     }
+
     .cartoon-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 9px 0 rgba(0, 0, 0, 0.25);
@@ -412,6 +412,7 @@ st.markdown(
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
+
     .player-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 9px 0 rgba(0,0,0,0.25);
@@ -421,6 +422,7 @@ st.markdown(
     transform: translateY(2px);
     box-shadow: 0 2px 0 rgba(0,0,0,0.25);
     }
+
 
     .player-icon {
         font-size: 30px;
@@ -3706,117 +3708,259 @@ elif page == "👤 使用者分析":
         "👤 使用者分析"
     )
 
-
     st.write(
         "請輸入 4 項主要遊戲行為與生活型態資料，"
         "系統將透過 XGBoost 分析遊戲成癮程度。"
     )
-
 
     st.info(
         "📌 輸入限制：4 項每日時間皆為 0～20 小時；"
         "平均每日遊戲時間不得大於平均每日總螢幕時間。"
     )
 
+    st.divider()
+
+    # ========================================================
+    # 🎮 PLAYER CREATE
+    # ========================================================
+
+    st.subheader(
+        "📝 PLAYER CREATE｜建立你的玩家資料"
+    )
+
+    st.write(
+        "調整下方 4 項數值，建立你的遊戲生活型態。"
+    )
+
+    # ========================================================
+    # Session State：使用者輸入
+    # ========================================================
+
+    if "gaming_hours_input" not in st.session_state:
+        st.session_state.gaming_hours_input = 3.0
+
+    if "sleep_hours_input" not in st.session_state:
+        st.session_state.sleep_hours_input = 4.0
+
+    if "exercise_hours_input" not in st.session_state:
+        st.session_state.exercise_hours_input = 0.0
+
+    if "screen_time_input" not in st.session_state:
+        st.session_state.screen_time_input = 6.0
+
+    # ========================================================
+    # 🎲 RANDOM PLAYER
+    # ========================================================
+
+    random_col, _ = st.columns(
+        [1, 3]
+    )
+
+    with random_col:
+
+        if st.button(
+            "🎲 RANDOM PLAYER",
+            use_container_width=True,
+            key="random_player_button"
+        ):
+
+            random_screen = float(
+                np.random.choice(
+                    np.arange(
+                        2.0,
+                        15.5,
+                        0.5
+                    )
+                )
+            )
+
+            random_gaming = float(
+                np.random.choice(
+                    np.arange(
+                        0.0,
+                        min(
+                            random_screen,
+                            12.0
+                        ) + 0.5,
+                        0.5
+                    )
+                )
+            )
+
+            random_sleep = float(
+                np.random.choice(
+                    np.arange(
+                        4.0,
+                        10.5,
+                        0.5
+                    )
+                )
+            )
+
+            random_exercise = float(
+                np.random.choice(
+                    np.arange(
+                        0.0,
+                        4.5,
+                        0.5
+                    )
+                )
+            )
+
+            st.session_state.gaming_hours_input = random_gaming
+            st.session_state.sleep_hours_input = random_sleep
+            st.session_state.exercise_hours_input = random_exercise
+            st.session_state.screen_time_input = random_screen
+
+            st.rerun()
+
+    st.divider()
+
+    # ========================================================
+    # 🎮 GAME TIME
+    # ========================================================
+
+    c1, c2 = st.columns(2)
+
+    with c1:
+
+        st.markdown(
+            """
+            <div class="game-section-title">
+                🎮 GAME TIME｜遊戲時數
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        gaming_hours = st.slider(
+            "你每天花多少時間玩遊戲？",
+            min_value=0.0,
+            max_value=20.0,
+            value=st.session_state.gaming_hours_input,
+            step=0.5,
+            key="gaming_hours_input",
+            help=field_help[
+                "daily_gaming_hours"
+            ]
+        )
+
+        st.caption(
+            f"🎮 PLAYER VALUE：{gaming_hours:.1f} 小時"
+        )
+
+    # ========================================================
+    # 😴 SLEEP
+    # ========================================================
+
+    with c2:
+
+        st.markdown(
+            """
+            <div class="game-section-title">
+                😴 SLEEP｜睡眠時數
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        sleep_hours = st.slider(
+            "你平均每天睡多久？",
+            min_value=0.0,
+            max_value=20.0,
+            value=st.session_state.sleep_hours_input,
+            step=0.5,
+            key="sleep_hours_input",
+            help=field_help[
+                "sleep_hours"
+            ]
+        )
+
+        st.caption(
+            f"😴 PLAYER VALUE：{sleep_hours:.1f} 小時"
+        )
+
+    # ========================================================
+    # 🌱 EXERCISE
+    # ========================================================
+
+    c3, c4 = st.columns(2)
+
+    with c3:
+
+        st.markdown(
+            """
+            <div class="game-section-title">
+                🌱 EXERCISE｜運動時數
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        exercise_hours = st.slider(
+            "你平均每天運動多久？",
+            min_value=0.0,
+            max_value=20.0,
+            value=st.session_state.exercise_hours_input,
+            step=0.5,
+            key="exercise_hours_input",
+            help=field_help[
+                "exercise_hours"
+            ]
+        )
+
+        st.caption(
+            f"🌱 PLAYER VALUE：{exercise_hours:.1f} 小時"
+        )
+
+    # ========================================================
+    # 🖥️ SCREEN TIME
+    # ========================================================
+
+    with c4:
+
+        st.markdown(
+            """
+            <div class="game-section-title">
+                🖥️ SCREEN TIME｜螢幕時數
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        screen_time = st.slider(
+            "你每天總共使用螢幕多久？",
+            min_value=0.0,
+            max_value=20.0,
+            value=st.session_state.screen_time_input,
+            step=0.5,
+            key="screen_time_input",
+            help=field_help[
+                "screen_time_total"
+            ]
+        )
+
+        st.caption(
+            f"🖥️ PLAYER VALUE：{screen_time:.1f} 小時"
+        )
 
     st.divider()
 
 
-    st.subheader(
-        "📝 使用者資料"
+    # ========================================================
+    # 🚀 START AI ANALYSIS
+    # ========================================================
+
+    submitted = st.button(
+        "🚀 START AI ANALYSIS",
+        use_container_width=True,
+        disabled=not model_ready,
+        key="start_ai_analysis_button"
     )
 
-
-    with st.form(
-        "user_input_form"
-    ):
-
-        c1, c2 = st.columns(2)
-
-
-        with c1:
-
-            gaming_hours = st.number_input(
-                "🎮 平均每日遊戲時間（小時）",
-
-                min_value=0.0,
-
-                max_value=20.0,
-
-                value=3.0,
-
-                step=0.5,
-
-                help=field_help[
-                    "daily_gaming_hours"
-                ]
-            )
-
-
-            exercise_hours = st.number_input(
-                "🌱 平均每日運動時間（小時）",
-
-                min_value=0.0,
-
-                max_value=20.0,
-
-                value=0.0,
-
-                step=0.5,
-
-                help=field_help[
-                    "exercise_hours"
-                ]
-            )
-
-
-        with c2:
-
-            screen_time = st.number_input(
-                "🖥️ 平均每日總螢幕時間（小時）",
-
-                min_value=0.0,
-
-                max_value=20.0,
-
-                value=6.0,
-
-                step=0.5,
-
-                help=field_help[
-                    "screen_time_total"
-                ]
-            )
-
-
-            sleep_hours = st.number_input(
-                "😴 平均每日睡眠時間（小時）",
-
-                min_value=0.0,
-
-                max_value=20.0,
-
-                value=4.0,
-
-                step=0.5,
-
-                help=field_help[
-                    "sleep_hours"
-                ]
-            )
-
-
-        st.divider()
-
-
-        submitted = st.form_submit_button(
-            "🚀 開始分析",
-
-            use_container_width=True,
-
-            disabled=not model_ready
-        )
-
+    # ========================================================
+    # 模型尚未準備完成
+    # ========================================================
 
     if not model_ready:
 
@@ -3824,6 +3968,9 @@ elif page == "👤 使用者分析":
             "⏳ XGBoost 模型目前尚未準備完成。"
         )
 
+    # ========================================================
+    # 開始分析
+    # ========================================================
 
     elif submitted:
 
@@ -3840,14 +3987,12 @@ elif page == "👤 使用者分析":
 
             st.stop()
 
-
-
-
         # ====================================================
         # 使用者資料
         # ====================================================
 
         user_input = pd.DataFrame({
+
             "daily_gaming_hours": [
                 gaming_hours
             ],
@@ -3863,8 +4008,8 @@ elif page == "👤 使用者分析":
             "screen_time_total": [
                 screen_time
             ]
-        })
 
+        })
 
         # ====================================================
         # MinMaxScaler
@@ -3876,7 +4021,6 @@ elif page == "👤 使用者分析":
             )
         )
 
-
         # ====================================================
         # XGBoost 預測
         # ====================================================
@@ -3886,7 +4030,6 @@ elif page == "👤 使用者分析":
                 scaled_user
             )
         )
-
 
         # ====================================================
         # Inverse Transform
@@ -3901,7 +4044,6 @@ elif page == "👤 使用者分析":
             )[0][0]
         )
 
-
         raw_score = float(
             np.clip(
                 raw_score,
@@ -3909,7 +4051,6 @@ elif page == "👤 使用者分析":
                 10
             )
         )
-
 
         # ====================================================
         # 百分比
@@ -3923,7 +4064,6 @@ elif page == "👤 使用者分析":
             )
         )
 
-
         # ====================================================
         # 成癮等級
         # ====================================================
@@ -3931,7 +4071,6 @@ elif page == "👤 使用者分析":
         level = addiction_level(
             raw_score
         )
-
 
         # ====================================================
         # Session State
@@ -3951,7 +4090,6 @@ elif page == "👤 使用者分析":
                 level
         }
 
-
     # ========================================================
     # 顯示結果
     # ========================================================
@@ -3962,34 +4100,27 @@ elif page == "👤 使用者分析":
             st.session_state.user_result
         )
 
-
         user_values = (
             result["user_values"]
         )
-
 
         addiction_score = (
             result["addiction_score"]
         )
 
-
         percentage = (
             result["percentage"]
         )
-
 
         level = (
             result["level"]
         )
 
-
         st.divider()
-
 
         left, right = st.columns(
             [1.2, 1]
         )
-
 
         # ====================================================
         # Gauge
@@ -4001,12 +4132,10 @@ elif page == "👤 使用者分析":
                 "🎯 遊戲成癮程度"
             )
 
-
             level_color = (
                 color_map[level]
             )
 
-            # Gauge：白天黑色、夜間白色
             gauge_text_color = (
                 "#FFFFFF"
                 if st.session_state.night_mode
@@ -4025,26 +4154,14 @@ elif page == "👤 使用者分析":
                 else "#FFFFFF"
             )
 
-
             gauge_html = f"""
             <!DOCTYPE html>
-
             <html>
-
             <head>
-
                 <meta charset="UTF-8">
-
-                <script src="
-                https://cdn.amcharts.com/lib/4/core.js
-                "></script>
-
-                <script src="
-                https://cdn.amcharts.com/lib/4/charts.js
-                "></script>
-
+                <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+                <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
                 <style>
-
                     html, body {{
                         margin:0;
                         padding:0;
@@ -4064,13 +4181,11 @@ elif page == "👤 使用者分析":
                         font-size:25px;
                         font-weight:bold;
                         padding:8px;
-                        color:#F4F7FF;
-                        background:#171B32;
+                        color:{gauge_text_color};
+                        background:{gauge_bg_color};
                         border-radius:12px;
                     }}
-
                 </style>
-
             </head>
 
             <body>
@@ -4078,60 +4193,34 @@ elif page == "👤 使用者分析":
                 <div id="chartdiv"></div>
 
                 <div id="result">
-
                     遊戲成癮程度：
                     {addiction_score:.2f} / 10
-
                     <br>
-
-                    <span style="
-                        color:{level_color};
-                    ">
-
+                    <span style="color:{level_color};">
                         {level}
-
                     </span>
-
                 </div>
 
-
                 <script>
-
                 am4core.ready(function() {{
 
-                    var chart =
-                        am4core.create(
-                            "chartdiv",
-                            am4charts.GaugeChart
-                        );
+                    var chart = am4core.create(
+                        "chartdiv",
+                        am4charts.GaugeChart
+                    );
 
-
-                    var axis =
-                        chart.xAxes.push(
-                            new am4charts.ValueAxis()
-                        );
-
+                    var axis = chart.xAxes.push(
+                        new am4charts.ValueAxis()
+                    );
 
                     axis.min = 0;
-
                     axis.max = 10;
-
                     axis.strictMinMax = true;
 
-
-                    axis.renderer.radius =
-                        am4core.percent(90);
-
-
-                    axis.renderer.innerRadius =
-                        am4core.percent(65);
-
-
+                    axis.renderer.radius = am4core.percent(90);
+                    axis.renderer.innerRadius = am4core.percent(65);
                     axis.renderer.line.strokeOpacity = 0;
-
-
                     axis.renderer.ticks.template.length = 10;
-
 
                     axis.renderer.labels.template.fontSize = 14;
                     axis.renderer.labels.template.fill =
@@ -4142,83 +4231,42 @@ elif page == "👤 使用者分析":
 
                     axis.renderer.ticks.template.strokeWidth = 2;
 
-
-                    var range1 =
-                        axis.axisRanges.create();
-
+                    var range1 = axis.axisRanges.create();
                     range1.value = 0;
-
                     range1.endValue = 2;
-
-                    range1.axisFill.fill =
-                        am4core.color("#4CAF50");
-
+                    range1.axisFill.fill = am4core.color("#4CAF50");
                     range1.axisFill.fillOpacity = 0.8;
 
-
-                    var range2 =
-                        axis.axisRanges.create();
-
+                    var range2 = axis.axisRanges.create();
                     range2.value = 2;
-
                     range2.endValue = 4;
-
-                    range2.axisFill.fill =
-                        am4core.color("#8BC34A");
-
+                    range2.axisFill.fill = am4core.color("#8BC34A");
                     range2.axisFill.fillOpacity = 0.8;
 
-
-                    var range3 =
-                        axis.axisRanges.create();
-
+                    var range3 = axis.axisRanges.create();
                     range3.value = 4;
-
                     range3.endValue = 6;
-
-                    range3.axisFill.fill =
-                        am4core.color("#FFC107");
-
+                    range3.axisFill.fill = am4core.color("#FFC107");
                     range3.axisFill.fillOpacity = 0.8;
 
-
-                    var range4 =
-                        axis.axisRanges.create();
-
+                    var range4 = axis.axisRanges.create();
                     range4.value = 6;
-
                     range4.endValue = 8;
-
-                    range4.axisFill.fill =
-                        am4core.color("#FF9800");
-
+                    range4.axisFill.fill = am4core.color("#FF9800");
                     range4.axisFill.fillOpacity = 0.8;
 
-
-                    var range5 =
-                        axis.axisRanges.create();
-
+                    var range5 = axis.axisRanges.create();
                     range5.value = 8;
-
                     range5.endValue = 10;
-
-                    range5.axisFill.fill =
-                        am4core.color("#F44336");
-
+                    range5.axisFill.fill = am4core.color("#F44336");
                     range5.axisFill.fillOpacity = 0.8;
 
-
-                    var hand =
-                        chart.hands.push(
-                            new am4charts.ClockHand()
-                        );
-
+                    var hand = chart.hands.push(
+                        new am4charts.ClockHand()
+                    );
 
                     hand.axis = axis;
-
-                    hand.innerRadius =
-                        am4core.percent(20);
-
+                    hand.innerRadius = am4core.percent(20);
                     hand.startWidth = 8;
                     hand.stroke = am4core.color("{gauge_pointer_color}");
                     hand.fill = am4core.color("{gauge_pointer_color}");
@@ -4227,25 +4275,19 @@ elif page == "👤 使用者分析":
                     hand.pin.fill = am4core.color("{gauge_pointer_color}");
                     hand.pin.stroke = am4core.color("{gauge_pointer_color}");
                     hand.pin.strokeWidth = 3;
-
-                    hand.value =
-                        {addiction_score};
+                    hand.value = {addiction_score};
 
                 }});
-
                 </script>
 
             </body>
-
             </html>
             """
-
 
             components.html(
                 gauge_html,
                 height=430
             )
-
 
         # ====================================================
         # 分析結果
@@ -4257,58 +4299,47 @@ elif page == "👤 使用者分析":
                 "📊 分析結果"
             )
 
-
             st.metric(
                 "🎯 成癮程度分數",
                 f"{addiction_score:.2f} / 10"
             )
-
 
             st.metric(
                 "📊 成癮傾向",
                 f"{percentage:.1f}%"
             )
 
-
             st.metric(
                 "📌 成癮等級",
                 level
             )
 
-
             if level == "低":
-
                 st.success(
                     "目前遊戲成癮程度：低"
                 )
 
             elif level == "偏低":
-
                 st.success(
                     "目前遊戲成癮程度：偏低"
                 )
 
             elif level == "中":
-
                 st.warning(
                     "目前遊戲成癮程度：中"
                 )
 
             elif level == "偏高":
-
                 st.warning(
                     "目前遊戲成癮程度：偏高"
                 )
 
             else:
-
                 st.error(
                     "目前遊戲成癮程度：高"
                 )
 
-
         st.divider()
-
 
         # ====================================================
         # 使用者輸入資料
@@ -4318,37 +4349,30 @@ elif page == "👤 使用者分析":
             "📋 使用者輸入資料"
         )
 
-
         input_table = pd.DataFrame({
             "分析項目": [
                 column_names[col]
                 for col in feature_columns
             ],
-
             "英文欄位":
                 feature_columns,
-
             "使用者輸入值": [
                 user_values[col]
                 for col in feature_columns
             ]
         })
 
-
         input_table.index = range(
             1,
             len(input_table) + 1
         )
-
 
         st.dataframe(
             input_table,
             use_container_width=True
         )
 
-
         st.divider()
-
 
         # ====================================================
         # 使用者 4 項主要特徵
@@ -4358,52 +4382,38 @@ elif page == "👤 使用者分析":
             "📊 使用者 4 項主要特徵"
         )
 
-
         chart_user_df = pd.DataFrame({
             "分析項目": [
                 column_names[col]
                 for col in feature_columns
             ],
-
             "使用者輸入值": [
                 user_values[col]
                 for col in feature_columns
             ]
         })
 
-
         fig_user = px.bar(
             chart_user_df,
-
             x="使用者輸入值",
-
             y="分析項目",
-
             orientation="h",
-
             title="使用者 4 項主要特徵"
         )
 
-
         fig_user.update_layout(
             height=400,
-
             paper_bgcolor="#ffffff",
-
             plot_bgcolor="#ffffff",
-
             font=dict(
                 color="#263238"
             )
         )
 
-
         st.plotly_chart(
             fig_user,
-
             use_container_width=True
         )
-
 
         st.info(
             "📌 本版本的使用者分析與資料分析均統一使用 4 個欄位："
