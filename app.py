@@ -132,7 +132,18 @@ st.markdown(
         padding: 20px;
         margin: 12px 0;
         box-shadow: 7px 7px 0 #E9C46A;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
+    .cartoon-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 9px 0 rgba(0, 0, 0, 0.25);
+}
+
+    .cartoon-card:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
 
     .section-card {
         background: #BDE0FE;
@@ -397,7 +408,19 @@ st.markdown(
         text-align: center;
         box-shadow: 5px 5px 0 #FFD166;
         min-height: 115px;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
+
+    .player-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 9px 0 rgba(0,0,0,0.25);
+}
+
+    .player-card:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.25);
+}
 
     .player-icon {
         font-size: 30px;
@@ -1333,14 +1356,9 @@ with st.sidebar:
         "Gaming Addiction Analysis System"
     )
 
-    st.divider()
-
     # ========================================================
-    # 功能選單
-    # 使用有趣版名稱顯示
-    # 程式內部仍維持原本正式名稱
+    # 功能選單資料
     # ========================================================
-
     page_display = {
         "🎮 遊戲大廳": "🏠 Dashboard",
         "📖 玩家手冊": "ℹ️ 專題說明",
@@ -1348,12 +1366,146 @@ with st.sidebar:
         "🕵️ 第一關 : 大BOSS": "✅ 資料驗證",
         "💥 第二關 : BOSS": "🧪 壓力測試",
         "🎯 第三關 : BOSS": "👤 使用者分析",
-        "🌐 資源情報站": "📚 參考文獻"
+        "🌐 破關花絮": "📚 參考文獻"
     }
 
-    # ⭐ 固定功能選單的 widget state，避免夜間模式 rerun 時回到第一頁
+    # ========================================================
+    # 🎮 Sidebar 遊戲進度（紅白機簡易版）
+    # ========================================================
+    if "page_navigation" not in st.session_state:
+        st.session_state.page_navigation = "🎮 遊戲大廳"
+
+    selected_display = st.session_state.page_navigation
+    _game_pages = list(page_display.keys())
+    _game_current_index = _game_pages.index(selected_display)
+    _game_progress = int(((_game_current_index + 1) / len(_game_pages)) * 100)
+
+    st.markdown(
+        f"""
+        <style>
+        /* ===== 簡易紅白機風格 ===== */
+        .sidebar-game-progress {{
+            margin: 8px 0 20px 0;
+            padding: 12px 13px 13px 13px;
+            border: 3px solid #222222;
+            border-radius: 4px;
+            background: #F5F1E8;
+            box-shadow: 4px 4px 0 #222222;
+            color: #222222 !important;
+            font-family: "Courier New", monospace;
+        }}
+
+        .sidebar-game-progress * {{
+            color: #222222 !important;
+        }}
+
+        .sidebar-game-top {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 9px;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }}
+
+        .sidebar-game-title {{
+            font-size: 10px;
+            font-weight: 900;
+        }}
+
+        .sidebar-game-percent {{
+            font-size: 12px;
+            font-weight: 900;
+        }}
+
+        .sidebar-game-name {{
+            font-size: 14px;
+            font-weight: 900;
+            line-height: 1.35;
+            margin-bottom: 10px;
+        }}
+
+        .sidebar-game-track {{
+            width: 100%;
+            height: 12px;
+            padding: 2px;
+            box-sizing: border-box;
+            border: 2px solid #222222;
+            background: #FFFFFF;
+            overflow: hidden;
+        }}
+
+        .sidebar-game-fill {{
+            height: 100%;
+            width: {_game_progress}%;
+            background: #E53935;
+        }}
+
+        .sidebar-game-mission {{
+            margin-top: 9px;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: .8px;
+        }}
+
+        /* 夜間：同一套紅白機結構，只切換底色與文字，確保看得清楚 */
+        .stApp .sidebar-game-progress {{
+            background: #1C1C1C;
+            border-color: #F2F2F2;
+            box-shadow: 4px 4px 0 #000000;
+            color: #FFFFFF !important;
+        }}
+
+        .stApp .sidebar-game-progress * {{
+            color: #FFFFFF !important;
+        }}
+
+        .stApp .sidebar-game-progress .sidebar-game-track {{
+            background: #FFFFFF;
+            border-color: #FFFFFF;
+        }}
+
+        .stApp .sidebar-game-progress .sidebar-game-fill {{
+            background: #E53935;
+        }}
+
+        /* Sidebar 選單：保持簡單的 8-bit 感 */
+        [data-testid="stSidebar"] [role="radiogroup"] {{
+            gap: 4px !important;
+        }}
+
+        [data-testid="stSidebar"] [role="radiogroup"] > label {{
+            border-radius: 2px !important;
+            padding: 8px 9px !important;
+            transition: none !important;
+        }}
+
+        [data-testid="stSidebar"] [role="radiogroup"] > label:hover {{
+            background: rgba(229,57,53,.10) !important;
+        }}
+        </style>
+
+        <div class="sidebar-game-progress">
+            <div class="sidebar-game-top">
+                <div class="sidebar-game-title">★ MISSION PROGRESS</div>
+                <div class="sidebar-game-percent">{_game_progress}%</div>
+            </div>
+            <div class="sidebar-game-name">{selected_display}</div>
+            <div class="sidebar-game-track">
+                <div class="sidebar-game-fill"></div>
+            </div>
+            <div class="sidebar-game-mission">PLAYER 01　|　MISSION {_game_current_index + 1} / {len(_game_pages)}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # ========================================================
+    # 功能選單
+    # ========================================================
     selected_display = st.radio(
-        "功能選單",
+        "",
         page_display,
         key="page_navigation"
     )
@@ -1369,7 +1521,6 @@ with st.sidebar:
         _scroll_page_changed = (st.session_state._scroll_last_page != page)
         st.session_state._scroll_last_page = page
 
-    st.divider()
     
 # ============================================================
 # 11. Dashboard
@@ -1877,7 +2028,7 @@ if page == "🏠 Dashboard":
 
     if st.button(
         "🎮 READY TO PLAY?\n\n"
-        "前往「🎯 第三關 : BOSS」輸入你的遊戲與生活型態資料\n\n"
+        "前往「📖 玩家手冊」\n\n"
         "▶ START YOUR AI CHALLENGE",
         use_container_width=True
     ):
