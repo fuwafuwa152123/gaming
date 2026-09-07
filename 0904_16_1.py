@@ -12,6 +12,15 @@ from xgboost import XGBRegressor
 
 
 # ============================================================
+# 🌙 遊戲夜間模式
+# ============================================================
+
+if "night_mode" not in st.session_state:
+    st.session_state.night_mode = False
+
+
+
+# ============================================================
 # 1. Streamlit 設定
 # ============================================================
 
@@ -895,6 +904,415 @@ else:
 
 
 # ============================================================
+# ☀️ / 🌙 白天／夜間模式切換
+# ============================================================
+
+# 右上角切換按鈕
+_, night_col = st.columns([12, 1])
+with night_col:
+    if st.button(
+        "☀️" if st.session_state.night_mode else "🌙",
+        key="night_mode_toggle",
+        help="切換白天／夜間遊戲模式"
+    ):
+        st.session_state.night_mode = not st.session_state.night_mode
+        st.rerun()
+
+# 夜間模式 CSS：只在開啟夜間模式時載入
+if st.session_state.night_mode:
+    st.markdown(
+        """
+        <style>
+        /* ====================================================
+           🌙 NIGHT GAMING MODE
+           只調整夜間模式，不改白天模式
+           ==================================================== */
+
+        .stApp {
+            background:
+                radial-gradient(circle at 15% 10%, rgba(92,107,192,.18), transparent 28%),
+                radial-gradient(circle at 85% 85%, rgba(126,87,194,.16), transparent 30%),
+                #101426 !important;
+            color: #F4F7FF !important;
+            position: relative;
+        }
+
+        /* 🎮 Gaming HUD：只在夜間模式出現，白天模式完全不受影響 */
+        .stApp::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: .16;
+            background-image:
+                linear-gradient(rgba(120,140,255,.16) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(120,140,255,.16) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, black, transparent 88%);
+        }
+
+        .stApp > header,
+        .stApp > div {
+            position: relative;
+            z-index: 1;
+        }
+
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #171B32 0%, #12162A 100%) !important;
+            border-right: 2px solid #5C6BC0 !important;
+            box-shadow: 6px 0 24px rgba(92,107,192,.18) !important;
+        }
+
+        [data-testid="stSidebar"] * {
+            color: #F4F7FF !important;
+        }
+
+        /* Streamlit 原生文字 */
+        .stMarkdown,
+        .stMarkdown p,
+        .stMarkdown span,
+        .stMarkdown li,
+        .stMarkdown strong,
+        .stMarkdown b,
+        .stCaption,
+        [data-testid="stCaptionContainer"],
+        [data-testid="stText"],
+        h1, h2, h3, h4, h5, p, label {
+            color: #F4F7FF !important;
+        }
+
+        /* ====================================================
+           自製 HTML 卡片
+           重點：卡片背景一起變深，不能只把文字變白
+           ==================================================== */
+
+        .hero-box {
+            background: #202746 !important;
+            border-color: #6675D9 !important;
+            box-shadow: 10px 10px 0 #7E57C2 !important;
+        }
+
+        .hero-box .hero-title,
+        .hero-box .hero-subtitle,
+        .hero-box div {
+            color: #F4F7FF !important;
+        }
+
+        .cartoon-card,
+        .section-card,
+        .gold-card,
+        .pink-card,
+        .green-card,
+        .game-card,
+        .player-card,
+        .flow-container,
+        .relation-top4,
+        .stress-image-title {
+            background: linear-gradient(145deg, #1B2140 0%, #151A34 100%) !important;
+            border-color: #5C6BC0 !important;
+            box-shadow: 0 0 0 1px rgba(102,117,217,.12), 7px 7px 0 #11162D, 0 0 22px rgba(92,107,192,.10) !important;
+            color: #F4F7FF !important;
+        }
+
+        .game-card-yellow,
+        .game-card-blue,
+        .game-card-green,
+        .game-card-pink,
+        .flow-step,
+        .flow-step-main,
+        .flow-step-green,
+        .flow-step-pink,
+        .game-section-title,
+        .flow-title {
+            background: #202746 !important;
+            border-color: #6675D9 !important;
+            color: #F4F7FF !important;
+        }
+
+        /* ====================================================
+           專題說明｜資料清理區塊
+           夜間模式改成深色底，避免白字落在淺藍底上看不見
+           ==================================================== */
+        .project-flow-cleaning {
+            background: #1B2140 !important;
+            border-color: #5C6BC0 !important;
+            color: #F4F7FF !important;
+        }
+
+        .project-flow-cleaning * {
+            color: #F4F7FF !important;
+            -webkit-text-fill-color: #F4F7FF !important;
+        }
+
+        .project-flow-cleaning-result {
+            background: #172D2A !important;
+            border-color: #52B788 !important;
+            color: #F4F7FF !important;
+        }
+
+        .project-flow-cleaning-result * {
+            color: #F4F7FF !important;
+            -webkit-text-fill-color: #F4F7FF !important;
+        }
+
+        .cartoon-card *,
+        .section-card *,
+        .gold-card *,
+        .pink-card *,
+        .green-card *,
+        .game-card *,
+        .player-card *,
+        .flow-container *,
+        .relation-top4 *,
+        .stress-image-title *,
+        .game-section-title *,
+        .flow-title *,
+        .flow-step *,
+        .game-flow * {
+            color: #F4F7FF !important;
+        }
+
+        /* 避免原本 HTML 寫死的深色文字在夜間消失 */
+        [style*="color:#263238"],
+        [style*="color: #263238"],
+        [style*="color:#264653"],
+        [style*="color: #264653"],
+        [style*="color:#7A5610"],
+        [style*="color: #7A5610"],
+        [style*="color:#5D4037"],
+        [style*="color: #5D4037"] {
+            color: #F4F7FF !important;
+            -webkit-text-fill-color: #F4F7FF !important;
+        }
+
+        /* 原本寫死白字的元素維持亮色 */
+        [style*="color:white"],
+        [style*="color: white"],
+        [style*="color:#FFFFFF"],
+        [style*="color: #FFFFFF"] {
+            color: #F4F7FF !important;
+            -webkit-text-fill-color: #F4F7FF !important;
+        }
+
+        /* Dashboard GAME FLOW */
+        .game-flow {
+            background: #171B32 !important;
+            border-color: #5C6BC0 !important;
+            color: #F4F7FF !important;
+            box-shadow: 7px 7px 0 #11162D !important;
+        }
+
+        .game-flow-title,
+        .game-flow-step {
+            color: #F4F7FF !important;
+        }
+
+        .game-flow-step {
+            background: #3949AB !important;
+            border-color: #6675D9 !important;
+        }
+
+        .player-number {
+            color: #FF8A80 !important;
+        }
+
+        .player-name {
+            color: #F4F7FF !important;
+        }
+
+        /* 🎮 PLAYER HUD：保留原文字與內容，只增加遊戲介面質感 */
+        .player-card {
+            border-color: #7986CB !important;
+            box-shadow: 0 0 18px rgba(92,107,192,.16), 7px 7px 0 #11162D !important;
+        }
+
+        /* 讓分析結果像遊戲 HUD，但不改任何分析文字 */
+        div[data-testid="stMetric"] {
+            position: relative;
+            overflow: hidden;
+        }
+
+        div[data-testid="stMetric"]::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -35%;
+            width: 25%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+            transform: skewX(-20deg);
+            animation: hud-scan 4.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes hud-scan {
+            0%, 65% { left: -35%; opacity: 0; }
+            72% { opacity: 1; }
+            88%, 100% { left: 120%; opacity: 0; }
+        }
+
+        /* ====================================================
+           Metric
+           ==================================================== */
+        div[data-testid="stMetric"] {
+            background: #1B2140 !important;
+            border-color: #5C6BC0 !important;
+            box-shadow: 5px 5px 0 #11162D !important;
+        }
+
+        div[data-testid="stMetric"] label,
+        div[data-testid="stMetric"] [data-testid="stMetricLabel"],
+        div[data-testid="stMetric"] [data-testid="stMetricValue"],
+        div[data-testid="stMetric"] [data-testid="stMetricDelta"],
+        div[data-testid="stMetric"] p,
+        div[data-testid="stMetric"] div,
+        div[data-testid="stMetric"] span {
+            color: #F4F7FF !important;
+            -webkit-text-fill-color: #F4F7FF !important;
+        }
+
+        /* ====================================================
+           Button
+           ==================================================== */
+        .stButton > button,
+        .stFormSubmitButton > button {
+            background: linear-gradient(135deg, #3949AB, #5E35B1) !important;
+            color: #FFFFFF !important;
+            border-color: #8C9EFF !important;
+            box-shadow: 0 0 14px rgba(92,107,192,.28), 5px 5px 0 #11162D !important;
+            letter-spacing: .5px;
+            transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+        }
+
+        .stButton > button:hover,
+        .stFormSubmitButton > button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.12);
+            box-shadow: 0 0 22px rgba(126,87,194,.42), 5px 5px 0 #11162D !important;
+        }
+
+        .stButton > button:hover,
+        .stFormSubmitButton > button:hover {
+            background: #7E57C2 !important;
+            color: #FFFFFF !important;
+            border-color: #9FA8DA !important;
+        }
+
+        /* ====================================================
+           輸入元件
+           ==================================================== */
+        input,
+        textarea {
+            background: #171B32 !important;
+            color: #F4F7FF !important;
+            caret-color: #F4F7FF !important;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #AEB7D8 !important;
+            opacity: 1 !important;
+        }
+
+        [data-baseweb="select"] > div,
+        [data-baseweb="input"] > div {
+            background: #171B32 !important;
+            color: #F4F7FF !important;
+            border-color: #5C6BC0 !important;
+        }
+
+        [data-baseweb="select"] *,
+        [data-baseweb="input"] * {
+            color: #F4F7FF !important;
+        }
+
+        /* Radio / Checkbox / Slider / Selectbox / NumberInput */
+        [data-testid="stCheckbox"] label,
+        [data-testid="stRadio"] label,
+        [data-testid="stSlider"] label,
+        [data-testid="stSelectbox"] label,
+        [data-testid="stNumberInput"] label,
+        [data-testid="stTextInput"] label {
+            color: #F4F7FF !important;
+        }
+
+        /* ====================================================
+           Expander / Tabs
+           ==================================================== */
+        [data-testid="stExpander"],
+        [data-baseweb="tab-list"],
+        [data-baseweb="tab"] {
+            color: #F4F7FF !important;
+        }
+
+        [data-testid="stExpander"] * {
+            color: #F4F7FF !important;
+        }
+
+        /* ====================================================
+           DataFrame / 表格
+           ==================================================== */
+        [data-testid="stDataFrame"] {
+            border-color: #5C6BC0 !important;
+        }
+
+        table,
+        thead,
+        tbody,
+        tr,
+        th,
+        td {
+            color: #F4F7FF !important;
+            border-color: #4F5B95 !important;
+        }
+
+        /* ====================================================
+           Markdown 內嵌 HTML：只針對真正的文字元素
+           不再把所有 div 強制變白，避免破壞卡片顏色
+           ==================================================== */
+        [data-testid="stMarkdownContainer"] p,
+        [data-testid="stMarkdownContainer"] li,
+        [data-testid="stMarkdownContainer"] strong,
+        [data-testid="stMarkdownContainer"] b {
+            color: #F4F7FF !important;
+        }
+
+        /* Links */
+        a,
+        [data-testid="stMarkdownContainer"] a {
+            color: #AEB7FF !important;
+        }
+
+        /* GitHub / 流程連結按鈕 */
+        .flow-py-link {
+            background: #3949AB !important;
+            color: #FFFFFF !important;
+            border-color: #6675D9 !important;
+            box-shadow: 3px 3px 0 #11162D !important;
+        }
+
+        /* ====================================================
+           Streamlit Info / Warning / Success / Error
+           ==================================================== */
+        [data-testid="stAlert"] {
+            color: #F4F7FF !important;
+        }
+
+        [data-testid="stAlert"] * {
+            color: #F4F7FF !important;
+        }
+
+        /* Header */
+        [data-testid="stHeader"] {
+            background: rgba(16,20,38,.85) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# ============================================================
 # 10. Sidebar
 # ============================================================
 
@@ -922,7 +1340,8 @@ with st.sidebar:
         "🔍 數據偵查局": "📊 資料與關係分析",
         "🕵️ 資料鑑識科": "✅ 資料驗證",
         "💥 AI 極限挑戰": "🧪 壓力測試",
-        "🎯 你的成癮測驗": "👤 使用者分析"
+        "🎯 你的成癮測驗": "👤 使用者分析",
+        "🌐 資源情報站": "📚 參考文獻"
     }
 
     selected_display = st.radio(
@@ -1441,7 +1860,7 @@ if page == "🏠 Dashboard":
 
     if st.button(
         "🎮 READY TO PLAY?\n\n"
-        "前往「👤 使用者分析」輸入你的遊戲與生活型態資料\n\n"
+        "前往「🎯 你的成癮測驗」輸入你的遊戲與生活型態資料\n\n"
         "▶ START YOUR AI CHALLENGE",
         use_container_width=True
     ):
@@ -1498,7 +1917,7 @@ elif page == "ℹ️ 專題說明":
             "Kaggle：Gaming & Mental Health",
             "gaming_mental_health_10M_40features.csv",
             "39 欄",
-            "10,000,000 筆"
+            "100萬筆"
         ]
     })
 
@@ -1637,7 +2056,7 @@ elif page == "ℹ️ 專題說明":
 
     st.markdown(
         """
-        <div style="
+        <div class="project-flow-cleaning" style="
             background:#BDE0FE;
             border:4px solid #457B9D;
             border-radius:16px;
@@ -1662,7 +2081,7 @@ elif page == "ℹ️ 專題說明":
 
     st.markdown(
         """
-        <div style="
+        <div class="project-flow-cleaning-result" style="
             background:#F1FAEE;
             border:3px solid #52B788;
             border-radius:14px;
@@ -1674,7 +2093,7 @@ elif page == "ℹ️ 專題說明":
                 📊 清洗結果
             </div>
             <div style="font-size:16px;font-weight:700;margin-top:8px;">
-                原始資料：1,000 萬筆
+                原始資料：100 萬筆
             </div>
             <div style="font-size:16px;font-weight:700;">
                 最終保留：271,807 筆
@@ -1724,7 +2143,8 @@ elif page == "ℹ️ 專題說明":
                 ✂️ 資料切割
             </div>
             <div style="font-size:14px; font-weight:700;">
-                將資料分成 100,000 / 100,000 / 71,807
+                將資料分成 100,000 / 100,000 / 71,807 <br>
+                gaming_part1_100k.csv / gaming_part2_100k.csv / gaming_part3_71807.csv<br>
             </div>
         </div>
         """,
@@ -2107,7 +2527,7 @@ elif page == "ℹ️ 專題說明":
                 font-size: 18px;
                 font-weight: 900;
             ">
-                🟢 低  🟡 中  🟠 偏高  🔴 高
+                🟢 低  🔵 偏低 🟡 中  🟠 偏高  🔴 高
             </div>
         </div>
         """,
@@ -2722,23 +3142,6 @@ elif page == "✅ 資料驗證":
     )
 
 
-    featurecheck1_df["中文欄位"] = (
-        featurecheck1_df["英文欄位"]
-        .map(column_names)
-        .fillna(
-            featurecheck1_df["英文欄位"]
-        )
-    )
-
-
-    featurecheck1_df = featurecheck1_df[
-        [
-            "排名",
-            "中文欄位",
-            "英文欄位",
-            "特徵重要度"
-        ]
-    ]
 
 
     st.dataframe(
@@ -2902,31 +3305,6 @@ elif page == "✅ 資料驗證":
     )
 
 
-    featurecheck2_df["中文欄位"] = (
-        featurecheck2_df["英文欄位"]
-        .map(column_names)
-        .fillna(
-            featurecheck2_df["英文欄位"]
-        )
-    )
-
-
-    # gaming_hours_sq 中文名稱
-
-    featurecheck2_df.loc[
-        featurecheck2_df["英文欄位"] == "gaming_hours_sq",
-        "中文欄位"
-    ] = "遊戲時間平方"
-
-
-    featurecheck2_df = featurecheck2_df[
-        [
-            "排名",
-            "中文欄位",
-            "英文欄位",
-            "特徵重要度"
-        ]
-    ]
 
 
     st.dataframe(
@@ -3493,7 +3871,9 @@ elif page == "👤 使用者分析":
                         font-size:25px;
                         font-weight:bold;
                         padding:8px;
-                        color:#263238;
+                        color:#F4F7FF;
+                        background:#171B32;
+                        border-radius:12px;
                     }}
 
                 </style>
@@ -3561,6 +3941,8 @@ elif page == "👤 使用者分析":
 
 
                     axis.renderer.labels.template.fontSize = 14;
+                    axis.renderer.labels.template.fill =
+                        am4core.color("#F4F7FF");
 
 
                     var range1 =
@@ -3640,8 +4022,11 @@ elif page == "👤 使用者分析":
                         am4core.percent(20);
 
                     hand.startWidth = 8;
-
+                    hand.stroke = am4core.color("#FFFFFF");
+                    hand.fill = am4core.color("#FFFFFF");
                     hand.pin.disabled = false;
+                    hand.pin.fill = am4core.color("#FFFFFF");
+                    hand.pin.stroke = am4core.color("#FFFFFF");
 
                     hand.value =
                         {addiction_score};
@@ -3825,3 +4210,71 @@ elif page == "👤 使用者分析":
             "平均每日遊戲時間、平均每日睡眠時間、"
             "平均每日運動時間、平均每日總螢幕時間。"
         )
+
+# ============================================================
+# 17. 參考文獻
+# ============================================================
+elif page == "📚 參考文獻":
+
+    st.title(
+        "📚 參考文獻"
+    )
+
+    st.write(
+        "本專題製作過程參考之網站、教學資源與資料來源如下。"
+    )
+
+    st.divider()
+
+    references = [
+        (
+            "🌐 W3Schools",
+            "W3CSS Web Template",
+            "https://www.w3schools.com/w3css/w3css_templates.asp"
+        ),
+        (
+            "🎨 Webnode",
+            "網站模板參考",
+            "https://www.webnode.com/zh/templates/?_gl=1%2A1zbchp%2A_up%2AMQ..%2A_gs%2AMQ..&gclid=Cj0KCQjwnbrUBhDOARIsAKKhPpcDEOEF546zca-9v0htmy4vB10Cjxlk_rLLZPGuhAjeEPuJXvjLMzQaAvLvEALw_wcB&gbraid=0AAAAABvFnN8Cv4EWceO7d5xsGND2NKsod"
+        ),
+        (
+            "📊 amCharts 4",
+            "圖表與資料視覺化參考",
+            "https://www.amcharts.com/demos-v4/"
+        ),
+        (
+            "🐍 115 Python 資料視覺化與數據網站",
+            "Python 資料視覺化與數據網站參考",
+            "https://padlet.com/zionjac/115python-9v2nxz1d69swqzp3"
+        ),
+        (
+            "💻 GitHub",
+            "程式碼版本管理與專題程式碼存放",
+            "https://github.com/"
+        ),
+        (
+            "🚀 Streamlit",
+            "Streamlit 登入與網站部署",
+            "https://share.streamlit.io/"
+        ),
+        (
+            "📚 Kaggle",
+            "資料集來源與資料分析參考",
+            "https://www.kaggle.com/"
+        )
+    ]
+
+    for name, description, url in references:
+        st.markdown(
+            f"""
+            <div class="cartoon-card">
+                <h3>{name}</h3>
+                <p>{description}</p>
+                <a href="{url}" target="_blank" class="flow-py-link">
+                    🔗 開啟網站
+                </a>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
