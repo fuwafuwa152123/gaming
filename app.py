@@ -929,26 +929,87 @@ else:
 
 
 # ============================================================
-# ☀️ / 🌙 白天／夜間模式切換
+# ☀️ / 🌙 + 🎵 右上角控制按鈕
 # ============================================================
 
-# 右上角切換按鈕
-_, night_col = st.columns([12, 1])
+_, night_col, bgm_col = st.columns([12, 1, 1])
+
+
+# ============================================================
+# ☀️ / 🌙 白天／夜間模式
+# ============================================================
+
 with night_col:
+
     if st.button(
         "☀️" if st.session_state.night_mode else "🌙",
         key="night_mode_toggle",
         help="切換白天／夜間遊戲模式"
     ):
-        # 先保存目前所在頁面，再重新執行程式。
-        # 夜間模式本身只應改變 CSS，不應改變功能選單。
+
+        # 先保存目前所在頁面
         current_page_selection = st.session_state.get(
             "page_navigation",
             "🎮 遊戲大廳"
         )
+
         st.session_state.page_navigation = current_page_selection
+
+        # 切換夜間模式
         st.session_state.night_mode = not st.session_state.night_mode
+
         st.rerun()
+
+
+# ============================================================
+# 🎵 BGM 開／關
+# ============================================================
+
+if "bgm_on" not in st.session_state:
+    st.session_state.bgm_on = True
+
+
+with bgm_col:
+
+    if st.button(
+        "🎵" if st.session_state.bgm_on else "🔇",
+        key="bgm_toggle",
+        help="關閉／開啟背景音樂"
+    ):
+
+        st.session_state.bgm_on = not st.session_state.bgm_on
+
+        st.rerun()
+
+
+# ============================================================
+# 🎵 BGM 播放
+# ============================================================
+
+BGM_URL = "https://raw.githubusercontent.com/fuwafuwa152123/gaming/main/BGM.mp3"
+
+if st.session_state.bgm_on:
+
+    components.html(
+        f"""
+        <audio id="bgm" autoplay loop>
+            <source src="{BGM_URL}" type="audio/mpeg">
+        </audio>
+
+        <script>
+            const bgm = document.getElementById("bgm");
+
+            // 音量 25%
+            bgm.volume = 0.25;
+
+            // 嘗試自動播放
+            bgm.play().catch(function(error) {{
+                console.log("瀏覽器阻止自動播放");
+            }});
+        </script>
+        """,
+        height=1
+    )
 
 # 夜間模式 CSS：只在開啟夜間模式時載入
 if st.session_state.night_mode:
