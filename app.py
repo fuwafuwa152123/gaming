@@ -3834,7 +3834,7 @@ elif page == "👤 使用者分析":
         )
 
         gaming_hours = st.slider(
-            "你每天花多少時間玩遊戲？",
+            "你平均每天花多少時間玩遊戲？",
             min_value=0.0,
             max_value=20.0,
             value=st.session_state.gaming_hours_input,
@@ -3866,7 +3866,7 @@ elif page == "👤 使用者分析":
         )
 
         screen_time = st.slider(
-            "你每天總共使用螢幕多久？",
+            "你平均每天總共使用螢幕多久？",
             min_value=0.0,
             max_value=20.0,
             value=st.session_state.screen_time_input,
