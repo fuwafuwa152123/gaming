@@ -4133,9 +4133,38 @@ elif page == "👤 使用者分析":
                 level
         }
 
+        # 記錄這次真正送出分析時的 4 項輸入值。
+        # 之後只要 Slider 有任何變化，就不再顯示舊的分析結果。
+        st.session_state.last_analyzed_inputs = (
+            float(gaming_hours),
+            float(sleep_hours),
+            float(exercise_hours),
+            float(screen_time)
+        )
+
     # ========================================================
     # 顯示結果
     # ========================================================
+
+    # 只要使用者重新調整輸入，就先清除舊的分析結果。
+    # 避免 Streamlit 因 Slider 重新執行程式時，舊結果又自動出現。
+    current_inputs = (
+        float(gaming_hours),
+        float(sleep_hours),
+        float(exercise_hours),
+        float(screen_time)
+    )
+
+    last_inputs = st.session_state.get(
+        "last_analyzed_inputs"
+    )
+
+    if (
+        st.session_state.user_result is not None
+        and last_inputs is not None
+        and current_inputs != last_inputs
+    ):
+        st.session_state.user_result = None
 
     if st.session_state.user_result is not None:
 
