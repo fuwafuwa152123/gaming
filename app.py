@@ -1339,6 +1339,49 @@ if st.session_state.night_mode:
         [data-testid="stHeader"] {
             background: rgba(16,20,38,.85) !important;
         }
+        /* ====================================================
+        🌙 Streamlit Help 問號 Tooltip
+        ==================================================== */
+
+        div[data-testid="stTooltipContent"] {
+            background: #1B2140 !important;
+            color: #FFFFFF !important;
+            border: 1px solid #6675D8 !important;
+            border-radius: 10px !important;
+            opacity: 1 !important;
+
+            --text-color: #FFFFFF !important;
+            --secondary-text-color: #FFFFFF !important;
+        }
+
+        div[data-testid="stTooltipContent"] *,
+        div[data-testid="stTooltipContent"] p,
+        div[data-testid="stTooltipContent"] span,
+        div[data-testid="stTooltipContent"] div {
+            background: transparent !important;
+            color: #FFFFFF !important;
+            -webkit-text-fill-color: #FFFFFF !important;
+            opacity: 1 !important;
+        }
+        
+        /* 🌙 夜間模式：Help 問號圖示 */
+        [data-testid="stTooltipIcon"] {
+            color: #FFFFFF !important;
+            opacity: 1 !important;
+        }
+
+        [data-testid="stTooltipIcon"] svg {
+            color: #1B2140 !important;
+            fill: none !important;
+            stroke: #FFFFFF !important;
+        }
+
+        [data-testid="stTooltipIcon"] svg * {
+            color: #1B2140 !important;
+            fill: none !important;
+            stroke: #FFFFFF !important;
+        }
+
         </style>
         """,
         unsafe_allow_html=True
